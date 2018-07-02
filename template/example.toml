@@ -1,0 +1,12 @@
+# keyp config file, uses toml
+# https://github.com/QuadeMorrison/keyp
+
+[facebook]
+username   = "bobby"
+password   = "aob#2b9u040MhaulsalsubSABSD38B"
+descripton = "This is my description."
+
+[google]
+username   = "jimmy"
+password   = "aob#238293015aulsalsubSABSD38B"
+descripton = "This is my description."
