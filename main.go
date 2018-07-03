@@ -4,16 +4,47 @@ import (
    "fmt"
    "log"
    "os"
+   "bufio"
+   "strings"
 
    "github.com/urfave/cli"
 )
+
+type Account struct {
+   Title string
+   Username string
+   Password string
+   Description string
+}
+
+func (a *Account) Print() {
+   fmt.Println("Title:       " + a.Title)
+   fmt.Println("Username:    " + a.Username)
+   fmt.Println("Password:    " + a.Password)
+   fmt.Println("Description: " + a.Description)
+}
+
+func executeParameters(c *cli.Context) {
+   if c.Bool("add") {
+      a := Account {}
+      a.Title = c.Args()[0]
+      prompt_info(&a)
+      fmt.Println() // for debugging
+      a.Print()
+   } else if c.Bool("change") {
+      a := Account {} // should open from toml file instead
+      prompt_info(&a)
+      fmt.Println() // for debugging
+   }
+   // remove is next
+}
 
 func main() {
    app := setup_gui()
 
    app.Action = func(c *cli.Context) error {
-      if len(c.Args()) == 1 {
-         fmt.Println("hello, it worked")
+      if c.NArg() == 1 {
+         executeParameters(c)
       } else {
          cli.ShowAppHelpAndExit(c, 0)
       }
@@ -25,6 +56,19 @@ func main() {
    if err != nil {
       log.Fatal(err)
    }
+}
+
+func prompt(s string) string {
+   reader := bufio.NewReader(os.Stdin)
+   fmt.Print(s)
+   text, _ := reader.ReadString('\n')
+   return strings.TrimSpace(text)
+}
+
+func prompt_info(a *Account) {
+   if len(a.Username)    == 0 { a.Username    = prompt("Username: ") }
+   if len(a.Password)    == 0 { a.Password    = prompt("Password: ") }
+   if len(a.Description) == 0 { a.Description = prompt("Description: ") }
 }
 
 func setup_gui() *cli.App {
