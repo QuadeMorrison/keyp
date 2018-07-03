@@ -4,9 +4,13 @@ import (
    "fmt"
    "log"
    "os"
+   "os/user"
    "bufio"
    "strings"
+   "path/filepath"
+   "io/ioutil"
 
+   "github.com/pelletier/go-toml"
    "github.com/urfave/cli"
 )
 
@@ -22,6 +26,34 @@ func (a *Account) Print() {
    fmt.Println("Username:    " + a.Username)
    fmt.Println("Password:    " + a.Password)
    fmt.Println("Description: " + a.Description)
+}
+
+func open_config_file() {
+   usr, err := user.Current()
+   if err != nil {
+      log.Fatal( err )
+   }
+
+   rc_path := filepath.Join(usr.HomeDir, ".keyp")
+   rc_bytes, err := ioutil.ReadFile(rc_path)
+   if err != nil {
+      log.Fatal( err )
+   }
+
+   // decrypt the file here
+
+   rc_string := string(rc_bytes)
+   fmt.Println(rc_string)
+   config, err2 := toml.Load(rc_string)
+   if err2 != nil {
+      log.Fatal( err )
+   }
+
+   // retrieve data directly
+   m := config.ToMap()
+   for k, v := range m {
+      fmt.Printf("key[%s] value[%s]\n", k, v)
+   }
 }
 
 func executeParameters(c *cli.Context) {
@@ -40,6 +72,7 @@ func executeParameters(c *cli.Context) {
 }
 
 func main() {
+   open_config_file()
    app := setup_gui()
 
    app.Action = func(c *cli.Context) error {
